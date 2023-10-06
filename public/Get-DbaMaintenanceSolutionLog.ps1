@@ -6,6 +6,10 @@ function Get-DbaMaintenanceSolutionLog {
     .DESCRIPTION
         Ola wrote a .sql script to get the content from the commandLog table. However, if LogToTable='N', there will be no logging in that table. This function reads the text files that are written in the SQL Instance's Log directory.
 
+        Be aware that this command only works if sqlcmd is used to execute the procedures, which is a legacy way to start them and not used by new installations.
+
+        We would instead recommend installing using Install-DbaMaintenanceSolution and calling the procedures with the LogToTable='Y' parameter.
+
     .PARAMETER SqlInstance
         The target SQL Server instance or instances.
 
@@ -246,7 +250,7 @@ function Get-DbaMaintenanceSolutionLog {
                             $remember['StartTime'] = [dbadatetime]([DateTime]::ParseExact($remember['Date and time'] , "yyyy-MM-dd HH:mm:ss", $null))
                             $remember.Remove('Date and time')
                             $remember['Duration'] = ($remember['Duration'] -as [timespan])
-                            [pscustomobject]$remember
+                            [PSCustomObject]$remember
                         }
                         $block = New-Object System.Collections.ArrayList
                     } else {

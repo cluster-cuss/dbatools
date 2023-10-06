@@ -109,7 +109,6 @@ function Get-DbaProductKey {
 
             switch ($versionMajor) {
                 9 {
-                    $sqlversion = "SQL Server 2005 $servicePack"
                     $findkeys = $reg.OpenSubKey("$($instanceReg.Path)\ProductID", $false)
                     foreach ($findkey in $findkeys.GetValueNames()) {
                         if ($findkey -like "DigitalProductID*") {
@@ -118,34 +117,10 @@ function Get-DbaProductKey {
                     }
                 }
                 10 {
-                    $sqlversion = "SQL Server 2008 $servicePack"
-                    if ($server.VersionMinor -eq 50) {
-                        $sqlversion = "SQL Server 2008 R2 $servicePack"
-                    }
                     $key = @("$($instanceReg.Path)\Setup\DigitalProductID")
                 }
-                11 {
-                    $key = @("$($instanceReg.Path)\Setup\DigitalProductID", "$($instanceReg.Path)\ClientSetup\DigitalProductID")
-                    $sqlversion = "SQL Server 2012 $servicePack"
-                }
-                12 {
-                    $key = @("$($instanceReg.Path)\Setup\DigitalProductID", "$($instanceReg.Path)\ClientSetup\DigitalProductID")
-                    $sqlversion = "SQL Server 2014 $servicePack"
-                }
-                13 {
-                    $key = @("$($instanceReg.Path)\Setup\DigitalProductID", "$($instanceReg.Path)\ClientSetup\DigitalProductID")
-                    $sqlversion = "SQL Server 2016 $servicePack"
-                }
-                14 {
-                    $key = @("$($instanceReg.Path)\Setup\DigitalProductID", "$($instanceReg.Path)\ClientSetup\DigitalProductID")
-                    $sqlversion = "SQL Server 2017 $servicePack"
-                }
-                15 {
-                    $key = @("$($instanceReg.Path)\Setup\DigitalProductID", "$($instanceReg.Path)\ClientSetup\DigitalProductID")
-                    $sqlversion = "SQL Server 2019 $servicePack"
-                }
                 default {
-                    Stop-Function -Message "SQL version not currently supported." -Continue
+                    $key = @("$($instanceReg.Path)\Setup\DigitalProductID", "$($instanceReg.Path)\ClientSetup\DigitalProductID")
                 }
             }
             if ($edition -notlike "*Express*") {
@@ -174,9 +149,8 @@ function Get-DbaProductKey {
                 $sqlkey = "SQL Server Express Edition"
             }
 
-            [pscustomobject]@{
-                Version = $sqlversion
-                Key     = $sqlkey
+            [PSCustomObject]@{
+                Key = $sqlkey
             }
             $reg.Close()
         }
@@ -197,26 +171,25 @@ function Get-DbaProductKey {
             # Get Product Keys for all instances on the server.
             foreach ($instanceReg in $registryroot) {
                 try {
-                    $server = Connect-DbaInstance -SqlInstance $instanceReg.SqlInstance -SqlCredential $SqlCredential -MinimumVersion 10
+                    $server = Connect-DbaInstance -SqlInstance $instanceReg.SqlInstance -SqlCredential $SqlCredential -MinimumVersion 9
                 } catch {
                     Stop-Function -Message "Failure" -Category ConnectionError -ErrorRecord $_ -Target $instanceReg.SqlInstance -Continue
                 }
 
-                $servicePack = $server.ProductLevel
                 $versionMajor = $server.VersionMajor
                 Write-Message -Level Debug -Message "$instance $instanceName version is $($server.VersionMajor)"
 
                 try {
                     $results = Invoke-Command2 -ComputerName $computer.ComputerName -Credential $Credential -ScriptBlock $scriptBlock -ArgumentList $server.VersionMajor, $instanceReg, $server.Edition
                 } catch {
-                    Stop-Function -Message "Failure" -ErrorRecord $_
+                    Stop-Function -Message "Failure" -ErrorRecord $_ -Continue
                 }
 
-                [pscustomobject]@{
+                [PSCustomObject]@{
                     ComputerName = $server.ComputerName
                     InstanceName = $server.ServiceName
                     SqlInstance  = $server.DomainInstanceName
-                    Version      = $results.Version
+                    Version      = $server.GetSqlServerVersionName()
                     Edition      = $server.Edition
                     Key          = $results.Key
                 }

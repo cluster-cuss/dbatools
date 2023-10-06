@@ -11,7 +11,7 @@
     RootModule         = 'dbatools.psm1'
 
     # Version number of this module.
-    ModuleVersion      = '2.0.3'
+    ModuleVersion      = '2.1.2'
 
     # ID used to uniquely identify this module
     GUID               = '9d139310-ce45-41ce-8e8b-d76335aa1789'
@@ -29,7 +29,7 @@
     Description        = "The community module that enables SQL Server Pros to automate database development and server administration"
 
     # Modules that must be imported into the global environment prior to importing this module
-    RequiredModules    = @{ ModuleName = 'dbatools.library'; ModuleVersion = '2023.5.5' }
+    RequiredModules    = @{ ModuleName = 'dbatools.library'; ModuleVersion = '2023.9.21' }
 
     # Assemblies that must be loaded prior to importing this module
     RequiredAssemblies = @()
@@ -139,7 +139,7 @@
         'Export-DbaLogin',
         'Export-DbaPfDataCollectorSetTemplate',
         'Export-DbaRegServer',
-        'Export-DbaRepServerSetting',
+        'Export-DbaReplServerSetting',
         'Export-DbaScript',
         'Export-DbaServerRole',
         'Export-DbaSpConfigure',
@@ -350,9 +350,10 @@
         'Get-DbaRegServer',
         'Get-DbaRegServerGroup',
         'Get-DbaRegServerStore',
-        'Get-DbaRepDistributor',
-        'Get-DbaRepPublication',
-        'Get-DbaRepServer',
+        'Get-DbaReplDistributor',
+        'Get-DbaReplPublication',
+        'Get-DbaReplPublisher',
+        'Get-DbaReplServer',
         'Get-DbaResourceGovernor',
         'Get-DbaRgClassifierFunction',
         'Get-DbaRgResourcePool',
@@ -421,7 +422,7 @@
         'Install-DbaMultiTool',
         'Install-DbaSqlWatch',
         'Install-DbaWhoIsActive',
-        'Invoke-DbaDbAzSqlTips',
+        'Invoke-DbaDbAzSqlTip',
         'Invoke-DbaAdvancedInstall',
         'Invoke-DbaAdvancedRestore',
         'Invoke-DbaAdvancedUpdate',
@@ -693,7 +694,7 @@
         'Test-DbaOptimizeForAdHoc',
         'Test-DbaPath',
         'Test-DbaPowerPlan',
-        'Test-DbaRepLatency',
+        'Test-DbaReplLatency',
         'Test-DbaSpn',
         'Test-DbaTempDbConfig',
         'Test-DbaWindowsLogin',
@@ -728,7 +729,23 @@
         'New-DbaLinkedServerLogin',
         'Remove-DbaLinkedServerLogin',
         'Remove-DbaCredential',
-        'Remove-DbaAgentProxy'
+        'Remove-DbaAgentProxy',
+
+        # NEW REPLICATION STUFF
+        'Disable-DbaReplDistributor',
+        'Enable-DbaReplDistributor',
+        'Disable-DbaReplPublishing',
+        'Enable-DbaReplPublishing',
+        'New-DbaReplPublication',
+        'Get-DbaReplArticle',
+        'Get-DbaReplArticleColumn',
+        'Add-DbaReplArticle',
+        'Remove-DbaReplArticle',
+        'Remove-DbaReplPublication',
+        'New-DbaReplSubscription',
+        'Remove-DbaReplSubscription',
+        'New-DbaReplCreationScriptOptions',
+        'Get-DbaReplSubscription'
     )
 
     # Cmdlets to export from this module
@@ -751,8 +768,19 @@
         'Write-DbaDataTable',
         'Get-DbaDbModule',
         'Get-DbaBuildReference',
-        'Copy-DbaSysDbUserObject'
+        'Copy-DbaSysDbUserObject',
+
+        # replication aliases - these existed before the repl overhaul in 2.0+
+        'Get-DbaRepServer',
+        'Export-DbaRepServerSetting',
+        'Get-DbaRepDistributor',
+        'Test-DbaRepLatency',
+        'Get-DbaRepDistributor',
+        'Get-DbaRepPublication',
+        'Get-DbaRepServer'
+
     )
+
 
     # List of all modules packaged with this module
     ModuleList         = @()
